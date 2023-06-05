@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  name          String
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now())
+  nextjs13todos nextjs13todo[]
+  sessions      Session[]
+}
+
+model nextjs13todo {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(255)
+  content   String?  @db.Text
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [email])
+  authorId  String
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
