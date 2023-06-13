@@ -1,16 +1,12 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
 import CardText from "@/app/components/layout/CardText";
 import Link from "next/link";
 import MenuController from "@/app/components/layout/MenuController";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 
 const getTodos = async () => {
-  // const session = await getServerSession(authOptions);
-  // if(!session) {
-  //   redirect('/components/auth/signin?callbackUrl=/')
-  // }
   
   const res = await fetch(process.env.BASE_URL + "/api/todo", {
     next: { revalidate: 0 },
@@ -20,6 +16,12 @@ const getTodos = async () => {
 };
 
 export default async function Home() {
+  const session = await getServerSession(authOptions)
+  console.log('ini session di app/page : ', session);
+  if(!session){
+    redirect('/components/auth/signin')
+  }
+  
   const todos = await getTodos();
     return (
       // <ErrorBoundary fallback={<ErrorComponent error={new Error("error")} reset={() => {}} /> }>

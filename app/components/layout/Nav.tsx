@@ -8,12 +8,7 @@ interface Props{
 }
 
 const Nav = ({showMenu} : Props) => {
-  // const {data:session} = useSession({
-  //   required:true,
-  //   onUnauthenticated(){
-  //     redirect('/components/auth/signin?callbackUrl=/')
-  //   }
-  // })
+
   return (
   // nav 
     <nav className={`${showMenu ? '' : 'hidden'} flex flex-col fixed sm:relative top-0 left-0 sm:mt-0 justify-between w-2/4 md:w-1/4 bg-amber-400 min-h-screen`}>

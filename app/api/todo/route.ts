@@ -1,23 +1,23 @@
-// import { PrismaClient } from "@prisma/client";
+// import prisma from "@/app/lib/prisma";
 // import { NextRequest, NextResponse } from "next/server";
 
-// const prisma = new PrismaClient();
 
 // export const GET = async (req: NextRequest) => {
 //   const todos = await prisma.nextjs13todo.findMany({});
 //   return NextResponse.json({ todos });
 // };
 
+
 // export const POST = async (req: NextRequest) => {
 //   const { title, content } = await req.json();
 
-//   const todos = await prisma.nextjs13todo.create({
-//     data: {
-//       title,
-//       content,
-//     },
-//   });
-//   return NextResponse.json({ todos });
+//   // const todos = await prisma.nextjs13todo.create({
+//   //   data: {
+//   //     title,
+//   //     content,
+//   //   },
+//   // });
+//   // return NextResponse.json({ todos });
 // };
 
 // export const DELETE = async (req: NextRequest) => {
@@ -52,17 +52,34 @@
 //   return NextResponse.json({ todos });
 // };
 
-import { PrismaClient } from "@prisma/client";
+async function testDatabaseConnection() {
+
+  try {
+    await prisma.$connect();
+    console.log('Koneksi database berhasil!');
+    // Lakukan operasi lain yang melibatkan Prisma di sini
+  } catch (error) {
+    console.error('Gagal terhubung ke database:', error);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+testDatabaseConnection();
+
+
+import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 
-const prisma = new PrismaClient();
 
 export const GET = async (req: NextRequest, res: NextResponse) => {
   const session = await getServerSession(authOptions);
+  console.log('ini session :',session)
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.log('not authenticated')
+    return NextResponse.json({authenticated:!!session,session});
   }
 
   const user = await prisma.user.findUnique({
@@ -71,38 +88,45 @@ export const GET = async (req: NextRequest, res: NextResponse) => {
     },
   });
 
+  console.log('user : ',user)
+
   if (user === null) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   const todos = await prisma.nextjs13todo.findMany({
-    where: {
-      authorId: user.id,
-    },
+    // where: {
+    //   authorId: user.id,
+    // },
   });
   return NextResponse.json({ todos });
 };
 
 
 //POST
-
 export const POST = async (req: NextRequest) => {
-  const session = await getServerSession(authOptions);
-  const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email ?? "" }, // Ubah sesuai dengan cara Anda mengidentifikasi pengguna
-  });
+//   if(req.method !== 'POST'){
+//     return NextResponse.json({message: "Method not allowed"},{status:405})
+//   }
+// //get user by session
+//   const session = await getServerSession(authOptions);
+//   const findUser = await prisma.user.findUnique({
+//     where: { email: session?.user?.email ?? "" },
+//   });
 
-  if (!user) {
-    throw new Error("User ID is missing");
-  }
-  const { title, content, author } = await req.json();
-  console.log(title, content, author);
+//   //if user is missing
+//   if (!findUser) {
+//     throw new Error("User ID is missing");
+//   }
+  
+  const { title, content } = await req.json();
+  // console.log(title, content, authorId);
 
   const todos = await prisma.nextjs13todo.create({
     data: {
       title,
       content,
-      authorId: user?.id,
+      // authorId: findUser?.id,
     },
   });
   return NextResponse.json({ todos });
@@ -110,7 +134,6 @@ export const POST = async (req: NextRequest) => {
 
 
 //DELETE
-
 export const DELETE = async (req: NextRequest) => {
   const url = new URL(req.url).searchParams;
   const id = Number(url.get("id")) || 0;
@@ -130,7 +153,6 @@ export const DELETE = async (req: NextRequest) => {
 
 
 //PUT
-
 export const PUT = async (req: NextRequest) => {
   const { id, title, content } = await req.json();
 

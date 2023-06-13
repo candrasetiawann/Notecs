@@ -1,9 +1,9 @@
 import NextAuth, { Profile } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/app/lib/prisma";
 
-const prisma = new PrismaClient();
+
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -34,19 +34,29 @@ export const authOptions = {
         return true;
       } else {
         //create new user
-        await prisma.user.create({
+        const newUser = await prisma.user.create({
           data: {
             email: email,
             name: profile.name,
+            image: profile.image,
+            emailVerified: profile.emailVerified !== null ? profile.emailVerified : undefined, // Set emailVerified to false
           },
         });
+
+        if(newUser){
+          return true
+        }else{
+          throw new Error('Failed to create new user')
+        }
+
       }
+
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/components/auth/signin",
-  },
+  // pages: {
+  //   signIn: "/components/auth/signin",
+  // },
 };
 
 const handler = NextAuth(authOptions);

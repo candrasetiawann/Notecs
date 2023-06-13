@@ -21,7 +21,7 @@ const Login = () => {
       </p>
       <button
         className="border-2 box-shadow-offset-black1 bg-amber-400 border-black px-4 py-2 mt-14 mx-14"
-        onClick={() => signIn("google", { callbackUrl })}
+        onClick={() => signIn("google")}
       >
         Continue with Google
       </button>

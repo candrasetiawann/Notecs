@@ -2,36 +2,32 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
-import { findUserByEmail } from "../api/todo/user";
+import { getUser } from "../api/getUser"; 
 
 
-const Page = async() => {
-  const { data: session, status } = useSession();
-  const user = await findUserByEmail(session?.user?.email ?? "")
-  const authorId = user?.id
+const Page = () => {
+  // const { data: session} = useSession();
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (event: any) => {
-    // const author = await prisma.user.findUnique({
-    //   where: { email: session?.user?.email ?? "" },
-    // });
-
+    // const user = await getUser(session?.user?.email ?? "")
+    // const authorId = user?.id
+    // console.log(authorId)
 
     event.preventDefault();
     setIsLoading(true);
+    
+    const body = {title,content}
     const response = await fetch("/api/todo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: title,
-        content: content,
-        authhorId: authorId
-      }),
+      body: JSON.stringify({body}),
     });
 
     if (response.ok) {
