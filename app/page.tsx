@@ -5,9 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
-
 const getTodos = async () => {
-  
   const res = await fetch(process.env.BASE_URL + "/api/todo", {
     next: { revalidate: 0 },
   });
@@ -16,16 +14,17 @@ const getTodos = async () => {
 };
 
 export default async function Home() {
-  const session = await getServerSession(authOptions)
-  console.log('ini session di app/page : ', session);
-  if(!session){
-    redirect('/components/auth/signin')
+  const session = await getServerSession(authOptions);
+  console.log("ini session di app/page : ", session);
+  if (!session) {
+    redirect("/components/auth/signin?callbackUrl=/signin");
   }
-  
+
+
   const todos = await getTodos();
-    return (
-      // <ErrorBoundary fallback={<ErrorComponent error={new Error("error")} reset={() => {}} /> }>
-      <div className="relative z-10 overflow-x-hidden">
+  return (
+    // <ErrorBoundary fallback={<ErrorComponent error={new Error("error")} reset={() => {}} /> }>
+    <div className="relative z-10 overflow-x-hidden">
       <div className=" fixed z-50 top-0 right-0 left-0 mt-0">
         <MenuController />
       </div>
@@ -50,14 +49,11 @@ export default async function Home() {
             </div>
           </div>
           {todos?.todos?.map((todo: any, index: number) => {
-            return <CardText key={index} todo={todo}/>;
+            return <CardText key={index} todo={todo} />;
           })}
         </div>
       </div>
     </div>
     // </ErrorBoundary>
   );
-  
 }
-
-

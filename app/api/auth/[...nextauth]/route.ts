@@ -1,9 +1,7 @@
-import NextAuth, { Profile } from "next-auth";
+import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/app/lib/prisma";
-
-
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -21,7 +19,7 @@ export const authOptions = {
     }),
   ],
   callback: {
-    async signIn({ profile }: any) {
+    async signIn({ profile}: any) {
       const email = profile.email;
       //search user in database
       const existingUser = await prisma.user.findUnique({
@@ -39,24 +37,22 @@ export const authOptions = {
             email: email,
             name: profile.name,
             image: profile.image,
-            emailVerified: profile.emailVerified !== null ? profile.emailVerified : undefined, // Set emailVerified to false
+            emailVerified:
+              profile.emailVerified !== null
+                ? profile.emailVerified
+                : undefined, // Set emailVerified to false
           },
         });
 
-        if(newUser){
-          return true
-        }else{
-          throw new Error('Failed to create new user')
+        if (newUser) {
+          return true;
+        } else {
+          throw new Error("Failed to create new user");
         }
-
       }
-
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  // pages: {
-  //   signIn: "/components/auth/signin",
-  // },
 };
 
 const handler = NextAuth(authOptions);
