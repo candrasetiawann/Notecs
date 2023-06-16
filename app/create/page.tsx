@@ -1,44 +1,39 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useSession } from "next-auth/react";
-import { getUser } from "../api/getUser"; 
-
 
 const Page = () => {
-  // const { data: session} = useSession();
+  const { data: session} = useSession();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (event: any) => {
-    // const user = await getUser(session?.user?.email ?? "")
-    // const authorId = user?.id
-    // console.log(authorId)
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 
     event.preventDefault();
     setIsLoading(true);
     
-    const body = {title,content}
     const response = await fetch("/api/todo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({body}),
+      body: JSON.stringify({title,content}),
     });
-
+    console.log(response)
     if (response.ok) {
       const responseData = await response.json();
       console.log(responseData);
       setIsLoading(false);
       router.push("/");
     } else {
-      // Handle the error condition appropriately
-      console.error("Failed to submit form:", response.status, response.statusText);
-      setIsLoading(false);
+      const errorData = await response.json();
+      console.error("Error failed to submit form:", response.status, response.statusText, errorData);
+      console.log(response)
+      setIsLoading(true);
     }
 
    
