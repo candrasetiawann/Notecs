@@ -19,40 +19,6 @@ export const authOptions:AuthOptions = {
       },
     }),
   ],
-  callbacks: {
-    async signIn({ profile}: any) {
-      const email = profile.email;
-      //search user in database
-      const existingUser = await prisma.user.findUnique({
-        where: {
-          email: email,
-        },
-      });
-
-      if (existingUser) {
-        return true;
-      } else {
-        //create new user
-        const newUser = await prisma.user.create({
-          data: {
-            email: email,
-            name: profile.name,
-            image: profile.image,
-            emailVerified:
-              profile.emailVerified !== null
-                ? profile.emailVerified
-                : undefined, // Set emailVerified to false
-          },
-        });
-
-        if (newUser) {
-          return true;
-        } else {
-          throw new Error("Failed to create new user");
-        }
-      }
-    },
-  },
   secret: process.env.NEXTAUTH_SECRET,
 };
 
