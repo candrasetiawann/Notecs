@@ -1,10 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import  { useState } from "react";
-import { useSession } from "next-auth/react";
 
 const Page = () => {
-  const { data: session} = useSession();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -23,7 +21,6 @@ const Page = () => {
       },
       body: JSON.stringify({title,content}),
     });
-    console.log(response)
     if (response.ok) {
       const responseData = await response.json();
       console.log(responseData);
