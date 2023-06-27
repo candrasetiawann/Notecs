@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { signIn } from "next-auth/react";
 import { redirect, useSearchParams } from "next/navigation";
 import Image from "next/image";
