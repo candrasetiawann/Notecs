@@ -2,26 +2,48 @@ import CardText from "@/app/components/layout/CardText";
 import Link from "next/link";
 import MenuController from "@/app/components/layout/MenuController";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "./lib/nextAuth";
 import { redirect } from "next/navigation";
+import prisma from "./lib/prisma";
 
-const getTodos = async () => {
-  const res = await fetch(process.env.BASE_URL + "/api/todo", {
-    next: { revalidate: 0 },
-  });
-  const json = await res.json();
-  return json;
-};
+interface Todo {
+  id: number;
+  title: string;
+  content: string | null;
+  published: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  authorId: string;
+}
 
-export default async function Home() {
+const getTodos = async (): Promise<Todo[]> => {
   const session = await getServerSession(authOptions);
-  console.log("ini session di app/page : ", session);
-  if (!session) {
-    redirect("/components/auth/signin?callbackUrl=/signin");
+  if (!session || session === null) {
+    return redirect("/components/auth/signin?callbackUrl=/signin");
   }
 
+  const findUser = await prisma.user.findUnique({
+    where: {
+      email: session?.user?.email ?? "",
+    },
+  });
 
-  const todos = await getTodos();
+  if (!findUser) {
+    throw new Error("You should be logged in");
+  }
+
+  const todosData = await prisma.nextjs13todo.findMany({
+    where: {
+      authorId: findUser?.id ?? "",
+    },
+  });
+  console.log(todosData);
+  return todosData || [];
+};
+
+export default async function Home(): Promise<JSX.Element> {
+  const todos: Todo[] = await getTodos();
+  // console.log("todos page : ", todos); //authenticated false session null
   return (
     // <ErrorBoundary fallback={<ErrorComponent error={new Error("error")} reset={() => {}} /> }>
     <div className="relative z-10 overflow-x-hidden">
@@ -48,7 +70,7 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-          {todos?.todos?.map((todo: any, index: number) => {
+          {todos && todos?.map((todo: any, index: number) => {
             return <CardText key={index} todo={todo} />;
           })}
         </div>
