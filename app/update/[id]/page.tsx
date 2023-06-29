@@ -1,16 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const Page = ({ params }: { params: { id: string } }) => {
   const id = params.id;
-  // console.log("ini params.id =" + id);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await fetch("/api/todo/", {
       method: "PUT",
@@ -22,8 +21,8 @@ const Page = ({ params }: { params: { id: string } }) => {
         content,
         id,
       }),
-    })
-      router.push("/")
+    });
+    router.push("/");
   };
 
   useEffect(() => {
@@ -34,14 +33,13 @@ const Page = ({ params }: { params: { id: string } }) => {
   const getData = async () => {
     const res = await fetch("/api/todo/" + id);
     const json = await res.json();
-    // console.log(json);
 
     if (!json) {
       router.push("/404");
       return;
     }
 
-      setTitle(json.todos.title);
+    setTitle(json.todos.title);
     setContent(json.todos.content);
   };
 
@@ -67,7 +65,9 @@ const Page = ({ params }: { params: { id: string } }) => {
             value={content}
             onChange={(event) => setContent(event.target.value)}
           />
-          <button className="bg-amber-400 py-2 px-4 border-4 border-black">Simpan</button>
+          <button className="bg-amber-400 py-2 px-4 border-4 border-black">
+            Simpan
+          </button>
         </form>
       </div>
     </div>

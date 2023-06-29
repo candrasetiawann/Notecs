@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect } from "react";
 
 interface ErrorProps {
@@ -15,7 +15,12 @@ export default function ErrorComponent({ error, reset }: ErrorProps) {
   return (
     <div className="flex flex-col justify-center my-auto">
       <h2 className="text-center">Something went wrong!</h2>
-      <button className="px-4 py-2 rounded-sm bg-red-600 text-white mx-auto" onClick={reset}>Try again</button>
+      <button
+        className="px-4 py-2 rounded-sm bg-red-600 text-white mx-auto"
+        onClick={reset}
+      >
+        Try again
+      </button>
     </div>
   );
 }

@@ -37,13 +37,11 @@ const getTodos = async (): Promise<Todo[]> => {
       authorId: findUser?.id ?? "",
     },
   });
-  console.log(todosData);
   return todosData || [];
 };
 
 export default async function Home(): Promise<JSX.Element> {
   const todos: Todo[] = await getTodos();
-  // console.log("todos page : ", todos); //authenticated false session null
   return (
     // <ErrorBoundary fallback={<ErrorComponent error={new Error("error")} reset={() => {}} /> }>
     <div className="relative z-10 overflow-x-hidden">
@@ -70,9 +68,10 @@ export default async function Home(): Promise<JSX.Element> {
               </Link>
             </div>
           </div>
-          {todos && todos?.map((todo: any, index: number) => {
-            return <CardText key={index} todo={todo} />;
-          })}
+          {todos &&
+            todos?.map((todo: any, index: number) => {
+              return <CardText key={index} todo={todo} />;
+            })}
         </div>
       </div>
     </div>

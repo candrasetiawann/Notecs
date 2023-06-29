@@ -1,39 +1,37 @@
 "use client";
 import { useRouter } from "next/navigation";
-import  { useState } from "react";
+import { useState } from "react";
 
 const Page = () => {
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-
     event.preventDefault();
     setIsLoading(true);
-    
+
     const response = await fetch("/api/todo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({title,content}),
+      body: JSON.stringify({ title, content }),
     });
     if (response.ok) {
-      const responseData = await response.json();
-      console.log(responseData);
       setIsLoading(false);
       router.push("/");
     } else {
       const errorData = await response.json();
-      console.error("Error failed to submit form:", response.status, response.statusText, errorData);
-      console.log(response)
+      console.error(
+        "Error failed to submit form:",
+        response.status,
+        response.statusText,
+        errorData
+      );
       setIsLoading(true);
     }
-
-   
     setIsLoading(false);
     router.push("/");
   };
