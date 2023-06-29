@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+
 # Notecs
 
 Notecs, Todolist app using nextjs
@@ -42,4 +44,4 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 # Notecs
 
-Notecs, Todolist app using nextjs
+# Notecs, Todolist app using nextjs
